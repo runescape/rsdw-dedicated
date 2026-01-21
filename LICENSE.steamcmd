@@ -1,4 +1,4 @@
-Container images build from this repository include SteamCMD as a discrete layer. The redistribution and use of SteamCMD is governed by the Steam Install Agreement (Steam_Install_Agreement).
+Container images built from this repository include SteamCMD as a discrete layer. The redistribution and use of SteamCMD is governed by the Steam Install Agreement (Steam_Install_Agreement).
 
 Copyright: Valve Corporation 
 License: Steam_Install_Agreement
