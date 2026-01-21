@@ -6,12 +6,9 @@
 if [[ $DEBUG -eq 1 ]] || [[ $DEBUG -eq 3 ]]; then
     STEAMCMD_SPEW="+set_spew_level 4 4"
 fi
-## CS2 server debugging
+## RSDW server debugging
 if [[ $DEBUG -eq 2 ]] || [[ $DEBUG -eq 3 ]]; then
-    CS2_LOG="on"
-    CS2_LOG_MONEY=1
-    CS2_LOG_DETAIL=3
-    CS2_LOG_ITEMS=1
+    RSDW_LOG="on"
 fi
 
 # Create App Dir
