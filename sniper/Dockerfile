@@ -59,11 +59,13 @@ ENV STEAMAPPVALIDATE=0
 
 COPY app/entry.sh "/entry.sh"
 
+ENV DEVBUILD_PRESIGNED_URL=""
 ENV RSDW_ADDITIONAL_ARGS=""
 
 # Set permissions on STEAMAPPDIR
 #   Permissions may need to be reset if persistent volume mounted
 RUN set -x \
+        && apt install unzip \
 	&& mkdir -p "${STEAMAPPDIR}" \
 	&& chmod +x "/entry.sh" \
         && chown -R "${PUID}:${PGID}" "${STEAMAPPDIR}" \
