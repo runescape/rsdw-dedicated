@@ -65,5 +65,8 @@ ln -sfT ${STEAMCMDDIR}/linux64/steamclient.so ~/.steam/sdk64/steamclient.so
 # Switch to server directory
 cd "${STEAMAPPDIR}/RSDragonwilds/"
 
+# Fix file permissions for Crash_handler
+/bin/chmod +x /home/steam/rsdw-dedicated/RSDragonwilds/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler
+
 # Start Server
 /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh
