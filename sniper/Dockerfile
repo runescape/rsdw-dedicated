@@ -58,14 +58,21 @@ ENV STEAMAPPDIR="${HOMEDIR}/${STEAMAPP}-dedicated"
 ENV STEAMAPPVALIDATE=0
 
 COPY app/entry.sh "/entry.sh"
+COPY etc/DedicatedServer.ini /etc/default/DedicatedServer.ini
+COPY etc/places /etc/default/DedicatedServer.names
 
 ENV DEVBUILD_PRESIGNED_URL=""
-ENV RSDW_ADDITIONAL_ARGS=""
+ENV RSDW_SERVER_NAME="rsdw-container" \
+    RSDW_WORLD_NAME="" \
+    RSDW_PASSWORD="random" \
+    RSDW_ADMINS="" \
+    RSDW_ADMIN_PASSWORD="random" \
+    RSDW_ADDITIONAL_ARGS=""
 
 # Set permissions on STEAMAPPDIR
 #   Permissions may need to be reset if persistent volume mounted
 RUN set -x \
-        && apt install unzip \
+        && apt-get install unzip gettext-base pwgen\
 	&& mkdir -p "${STEAMAPPDIR}" \
 	&& chmod +x "/entry.sh" \
         && chown -R "${PUID}:${PGID}" "${STEAMAPPDIR}" \
