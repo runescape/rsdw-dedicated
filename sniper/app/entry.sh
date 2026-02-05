@@ -14,7 +14,7 @@ function download() {
   if [[ -n "$DEVBUILD_PRESIGNED_URL" ]]; then
     # Download Dev build (zip archive) if URL provided
     curl -o build.zip "${DEVBUILD_PRESIGNED_URL}"
-    unzip build.zip -o -d "${STEAMAPPDIR}"
+    unzip -o build.zip -d "${STEAMAPPDIR}"
   else
     # Else, download live build from Steam
     if [[ "$STEAMAPPVALIDATE" -eq 1 ]]; then
