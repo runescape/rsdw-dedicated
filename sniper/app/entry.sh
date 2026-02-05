@@ -100,4 +100,5 @@ cd "${STEAMAPPDIR}/RSDragonwilds/"
 /bin/chmod +x /home/steam/rsdw-dedicated/RSDragonwilds/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler
 
 # Start Server
-eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
+#eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
+/bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh
