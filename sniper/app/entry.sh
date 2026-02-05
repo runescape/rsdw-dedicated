@@ -69,9 +69,6 @@ fi
 mkdir -p ~/.steam/sdk64
 ln -sfT ${STEAMCMDDIR}/linux64/steamclient.so ~/.steam/sdk64/steamclient.so
 
-# Download Dedicated Server
-download
-
 # Parse Environment Variables
 
 ## Generate random passwords, if required
@@ -89,6 +86,9 @@ if [[ -z $RSDW_WORLD_NAME ]]; then
   export RSDW_WORLD_NAME=$(shuf -n 1 /etc/default/DedicatedServer.names)
   echo "RSDW_WORLD_NAME set to: ${RSDW_WORLD_NAME}"
 fi
+
+# Download Dedicated Server
+download
 
 # Template configuration file
 envsubst < /etc/default/DedicatedServer.ini > ${STEAMAPPDIR}/RSDragonwilds/Saved/Config/LinuxServer/DedicatedServer.ini
