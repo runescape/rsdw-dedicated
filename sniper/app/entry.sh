@@ -14,7 +14,7 @@ function download() {
   if [[ -n "$DEVBUILD_PRESIGNED_URL" ]]; then
     # Download Dev build (zip archive) if URL provided
     curl -o build.zip "${DEVBUILD_PRESIGNED_URL}"
-    unzip build.zip -d "${STEAMAPPDIR}"
+    unzip build.zip -o -d "${STEAMAPPDIR}"
   else
     # Else, download live build from Steam
     if [[ "$STEAMAPPVALIDATE" -eq 1 ]]; then
@@ -100,4 +100,4 @@ cd "${STEAMAPPDIR}/RSDragonwilds/"
 /bin/chmod +x /home/steam/rsdw-dedicated/RSDragonwilds/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler
 
 # Start Server
-/bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh
+eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}

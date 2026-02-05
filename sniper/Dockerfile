@@ -67,6 +67,7 @@ ENV RSDW_SERVER_NAME="rsdw-container" \
     RSDW_PASSWORD="random" \
     RSDW_ADMINS="" \
     RSDW_ADMIN_PASSWORD="random" \
+    RSDW_PORT=7777 \
     RSDW_ADDITIONAL_ARGS=""
 
 # Set permissions on STEAMAPPDIR

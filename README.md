@@ -23,9 +23,9 @@ docker run -d --name=rsdw-dedicataed ghcr.io/runescape/rsdw-dedicated
 
 Minimum system requirements are:
 
-* 2 CPU cores
-* 2GiB RAM
-* 8GiB of disk space
+* 1 CPU cores
+* 4 GiB RAM
+* 20 GB of disk space
 
 # Configuration
 
@@ -36,6 +36,7 @@ Feel free to overwrite these environment variables, using -e (--env):
 
 | Variable             | Type   | Default        | Description    |
 | -------------------- | ------ | -------------- | -------------- |
+| RSDW_PORT            | number | 7777           | UDP port for the server process to bind to. |
 | RSDW_SERVER_NAME     | string | rsdw-container | Name of server | 
 | RSDW_WORLD_NAME      | string | random         | Visible name of server in the Worlds browser |
 | RSDW_PASSWORD        | string | random         | Server password. Explicitly set to an empty string if no password is desierd. |
