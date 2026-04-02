@@ -68,10 +68,11 @@ ENV RSDW_SERVER_NAME="rsdw-container" \
     RSDW_ADMINS="" \
     RSDW_ADMIN_PASSWORD="random" \
     RSDW_PORT=7777 \
-    RSDW_ADDITIONAL_ARGS=""
+    RSDW_ADDITIONAL_ARGS="" \
+    RSDW_OWNER_ID=""
 
 # Set permissions on STEAMAPPDIR
-#   Permissions may need to be reset if persistent volume mounted
+# Permissions may need to be reset if persistent volume mounted
 RUN set -x \
         && apt-get install unzip gettext-base pwgen\
 	&& mkdir -p "${STEAMAPPDIR}" \
