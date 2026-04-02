@@ -49,6 +49,8 @@ Feel free to overwrite these environment variables, using -e (--env):
 > Environment variables with `random` default values are set to random strings each time the container starts.
 > See the container's standard output for the randomly generated value.
 > Explicitly setting these environment variables will disable this behaviour.
+
+> [!NOTE] 
 > RSDW_OWNER_ID needs to be set as this will stop the RSDragonwildsServer.sh script from starting
 
 ## Debug Logging
