@@ -16,7 +16,7 @@ This image provides a convenient [RuneScape: Dragonwilds Server](https://store.s
 
 Running using Docker:
 ```console
-docker run -d --name=rsdw-dedicataed ghcr.io/runescape/rsdw-dedicated
+docker run -d --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicataed ghcr.io/runescape/rsdw-dedicated
 ```
 
 ## System Requirements
@@ -40,6 +40,7 @@ Feel free to overwrite these environment variables, using -e (--env):
 | RSDW_SERVER_NAME     | string | rsdw-container | Name of server | 
 | RSDW_WORLD_NAME      | string | random         | Visible name of server in the Worlds browser |
 | RSDW_PASSWORD        | string | random         | Server password. Explicitly set to an empty string if no password is desierd. |
+| RSDW_OWNER_ID        | string |                | OwnerId used for starting the DragonWilds Server (REQUIRED). |
 | RSDW_ADMINS          | string |                | Comma separated list of user ids |
 | RSDW_ADMIN_PASSWORD  | string | random         | Server admin password. |
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
@@ -48,6 +49,9 @@ Feel free to overwrite these environment variables, using -e (--env):
 > Environment variables with `random` default values are set to random strings each time the container starts.
 > See the container's standard output for the randomly generated value.
 > Explicitly setting these environment variables will disable this behaviour.
+
+> [!NOTE] 
+> RSDW_OWNER_ID needs to be set as this will stop the RSDragonwildsServer.sh script from starting
 
 ## Debug Logging
 
