@@ -42,9 +42,11 @@ Feel free to overwrite these environment variables, using -e (--env):
 | RSDW_PASSWORD        | string | random         | Server password. Explicitly set to an empty string if no password is desierd. |
 | RSDW_ADMINS          | string |                | Comma separated list of user ids |
 | RSDW_ADMIN_PASSWORD  | string | random         | Server admin password. |
+| RSDW_OWNER_ID | string |                | The EOS Online ID of the owner of the server |
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
 
 > [!NOTE]
+> The `RSDW_OWNER_ID` variable is **required** for server visibility/functionality
 > Environment variables with `random` default values are set to random strings each time the container starts.
 > See the container's standard output for the randomly generated value.
 > Explicitly setting these environment variables will disable this behaviour.
