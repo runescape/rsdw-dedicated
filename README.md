@@ -46,10 +46,10 @@ Feel free to overwrite these environment variables, using -e (--env):
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
 
 > [!NOTE]
-> The `RSDW_OWNER_ID` variable is **required** for server visibility/functionality
-> Environment variables with `random` default values are set to random strings each time the container starts.
-> See the container's standard output for the randomly generated value.
-> Explicitly setting these environment variables will disable this behaviour.
+> - `RSDW_OWNER_ID` is **required** for server visibility/functionality  
+> - Environment variables with `random` default values are regenerated as random strings each time the container starts  
+> - Check the container’s standard output for the generated values  
+> - Explicitly setting these environment variables disables this behavior
 
 ## Debug Logging
 
