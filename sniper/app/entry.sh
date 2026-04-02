@@ -71,6 +71,15 @@ ln -sfT ${STEAMCMDDIR}/linux64/steamclient.so ~/.steam/sdk64/steamclient.so
 
 # Parse Environment Variables
 
+## Check RSDW_OWNER_ID is declared
+## Should add input validation here but not sure if OWNER_ID will always be the same length
+## Asked the Team to let me know.
+if [[ -z "$RSDW_OWNER_ID" ]]; then
+  echo "Need RSDW_OWNER_ID, check here for more help https://dragonwilds.runescape.wiki/w/Dedicated_Servers"
+  exit 1
+else
+  echo "RSDW_OWNER_ID set to: ${RSDW_OWNER_ID}"
+fi
 ## Generate random passwords, if required
 if [[ "$RSDW_PASSWORD" == "random" ]]; then
   export RSDW_PASSWORD=$(pwgen -AB 12 1)
@@ -97,7 +106,7 @@ envsubst < /etc/default/DedicatedServer.ini > ${STEAMAPPDIR}/RSDragonwilds/Saved
 cd "${STEAMAPPDIR}/RSDragonwilds/"
 
 # Fix file permissions for Crash_handler
-/bin/chmod +x /home/steam/rsdw-dedicated/RSDragonwilds/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler
+/bin/chmod +x ${STEAMAPPDIR}/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler
 
 # Start Server
 #eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
