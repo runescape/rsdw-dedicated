@@ -36,14 +36,13 @@ Feel free to overwrite these environment variables, using -e (--env):
 
 | Variable             | Type   | Default        | Description    |
 | -------------------- | ------ | -------------- | -------------- |
+| RSDW_OWNER_ID        | string |                | The EOS Online ID of the owner of the server (REQUIRED).|
 | RSDW_PORT            | number | 7777           | UDP port for the server process to bind to. |
 | RSDW_SERVER_NAME     | string | rsdw-container | Name of server | 
 | RSDW_WORLD_NAME      | string | random         | Visible name of server in the Worlds browser |
-| RSDW_PASSWORD        | string | random         | Server password. Explicitly set to an empty string if no password is desierd. |
-| RSDW_OWNER_ID        | string |                | OwnerId used for starting the DragonWilds Server (REQUIRED). |
+| RSDW_PASSWORD        | string | random         | Server password. Explicitly set to an empty string if no password is desired. |
 | RSDW_ADMINS          | string |                | Comma separated list of user ids |
 | RSDW_ADMIN_PASSWORD  | string | random         | Server admin password. |
-| RSDW_OWNER_ID | string |                | The EOS Online ID of the owner of the server |
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
 
 > [!NOTE]
@@ -51,9 +50,6 @@ Feel free to overwrite these environment variables, using -e (--env):
 > - Environment variables with `random` default values are regenerated as random strings each time the container starts  
 > - Check the container’s standard output for the generated values  
 > - Explicitly setting these environment variables disables this behavior
-
-> [!NOTE] 
-> RSDW_OWNER_ID needs to be set as this will stop the RSDragonwildsServer.sh script from starting
 
 ## Debug Logging
 
