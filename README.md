@@ -43,12 +43,14 @@ Feel free to overwrite these environment variables, using -e (--env):
 | RSDW_OWNER_ID        | string |                | OwnerId used for starting the DragonWilds Server (REQUIRED). |
 | RSDW_ADMINS          | string |                | Comma separated list of user ids |
 | RSDW_ADMIN_PASSWORD  | string | random         | Server admin password. |
+| RSDW_OWNER_ID | string |                | The EOS Online ID of the owner of the server |
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
 
 > [!NOTE]
-> Environment variables with `random` default values are set to random strings each time the container starts.
-> See the container's standard output for the randomly generated value.
-> Explicitly setting these environment variables will disable this behaviour.
+> - `RSDW_OWNER_ID` is **required** for server visibility/functionality  
+> - Environment variables with `random` default values are regenerated as random strings each time the container starts  
+> - Check the container’s standard output for the generated values  
+> - Explicitly setting these environment variables disables this behavior
 
 > [!NOTE] 
 > RSDW_OWNER_ID needs to be set as this will stop the RSDragonwildsServer.sh script from starting

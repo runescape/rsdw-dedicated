@@ -71,15 +71,16 @@ ln -sfT ${STEAMCMDDIR}/linux64/steamclient.so ~/.steam/sdk64/steamclient.so
 
 # Parse Environment Variables
 
-## Check RSDW_OWNER_ID is declared
-## Should add input validation here but not sure if OWNER_ID will always be the same length
-## Asked the Team to let me know.
+# Ensure an Owner ID is set, as this is required
 if [[ -z "$RSDW_OWNER_ID" ]]; then
-  echo "Need RSDW_OWNER_ID, check here for more help https://dragonwilds.runescape.wiki/w/Dedicated_Servers"
+  echo "Error: RSDW_OWNER_ID environment variable is not set."
+  echo "Please set RSDW_OWNER_ID to the EOS ID of the user who will own the server. You can find this ingame under 'Settings'"
+  echo "See: https://dragonwilds.runescape.wiki/w/Dedicated_Servers"
   exit 1
 else
   echo "RSDW_OWNER_ID set to: ${RSDW_OWNER_ID}"
 fi
+
 ## Generate random passwords, if required
 if [[ "$RSDW_PASSWORD" == "random" ]]; then
   export RSDW_PASSWORD=$(pwgen -AB 12 1)
@@ -106,8 +107,7 @@ envsubst < /etc/default/DedicatedServer.ini > ${STEAMAPPDIR}/RSDragonwilds/Saved
 cd "${STEAMAPPDIR}/RSDragonwilds/"
 
 # Fix file permissions for Crash_handler
-/bin/chmod +x ${STEAMAPPDIR}/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler
+/bin/chmod +x "${STEAMAPPDIR}/RSDragonwilds/Plugins/Developer/Sentry/Binaries/Linux/crashpad_handler"
 
 # Start Server
-#eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
-/bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh
+/bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -Port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
