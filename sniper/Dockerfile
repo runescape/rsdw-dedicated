@@ -64,6 +64,7 @@ COPY etc/places /etc/default/DedicatedServer.names
 ENV DEVBUILD_PRESIGNED_URL=""
 ENV RSDW_SERVER_NAME="rsdw-container" \
     RSDW_WORLD_NAME="" \
+    RSDW_OWNER_ID="" \
     RSDW_PASSWORD="random" \
     RSDW_ADMINS="" \
     RSDW_ADMIN_PASSWORD="random" \

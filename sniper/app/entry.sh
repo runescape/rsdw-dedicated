@@ -75,7 +75,10 @@ ln -sfT ${STEAMCMDDIR}/linux64/steamclient.so ~/.steam/sdk64/steamclient.so
 if [[ -z "$RSDW_OWNER_ID" ]]; then
   echo "Error: RSDW_OWNER_ID environment variable is not set."
   echo "Please set RSDW_OWNER_ID to the EOS ID of the user who will own the server. You can find this ingame under 'Settings'"
+  echo "See: https://dragonwilds.runescape.wiki/w/Dedicated_Servers"
   exit 1
+else
+  echo "RSDW_OWNER_ID set to: ${RSDW_OWNER_ID}"
 fi
 
 ## Generate random passwords, if required
