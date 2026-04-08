@@ -27,6 +27,20 @@ Minimum system requirements are:
 * 4 GiB RAM
 * 20 GB of disk space
 
+## Data Persistence
+
+Running with data persistence using Docker:
+
+```console
+# Create a Docker Volume
+docker volume create rsdw-dedicated
+```
+
+```console
+# Run with volume attached
+docker run -d -v rsdw-dedicated:/home/steam/rsdw-dedicated --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicataed ghcr.io/runescape/rsdw-dedicated
+```
+
 # Configuration
 
 ## Environment Variables
