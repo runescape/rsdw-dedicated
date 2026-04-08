@@ -27,7 +27,7 @@ function download() {
     AUTO_UPDATE="true"
 
     # Get current buildid
-    STEAMPIPE_BUILD_ID=$(curl -s ${STEAMCMD_API}/${STEAMAPPID} | jq -r ".data.[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid")
+    STEAMPIPE_BUILD_ID=$(curl -s ${STEAMCMD_API}/${STEAMAPPID} | jq -r ".data[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid")
 
     # Else, download live build from Steam
     if [[ "$STEAMAPPVALIDATE" -eq 1 ]]; then
@@ -85,26 +85,28 @@ function start() {
 
   trap cleanup SIGINT SIGTERM
 
+  echo "Launching RSDragonwildsServer.sh"
+
   if [[ "$AUTO_UPDATE" == "true" ]]; then
-    eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -Port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS} &
+    eval bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -Port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS} &
     server_pid=$!
 
-    while kill -0 "$pid" 2>/dev/null; do
-      if [[ $(curl -s ${STEAMCMD_API}/${STEAMAPPID} | jq -r ".data.[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid") == "${STEAMPIPE_BUILD_ID}" ]]; then
+    while kill -0 "$server_pid" 2>/dev/null; do
+      sleep 1800 &
+      sleep_pid=$!
+      wait "$sleep_pid" 2>/dev/null || true
+      if [[ $(curl -s ${STEAMCMD_API}/${STEAMAPPID} | jq -r ".data[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid") == "${STEAMPIPE_BUILD_ID}" ]]; then
         echo "New BuildID is available, stopping server."
         kill -TERM "$server_pid"
         break
       fi
-      sleep 1800 &
-      sleep_pid=$!
-      wait "$sleep_pid" 2>/dev/null || true
       sleep_pid=""
     done
 
     wait "$sever_pid" 2>/dev/null || true
     server_pid=""
   else
-    eval /bin/bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -Port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
+    eval bash ${STEAMAPPDIR}/RSDragonwildsServer.sh -Port ${RSDW_PORT} ${RSDW_ADDITIONAL_ARGUMENTS}
   fi
 }
 
