@@ -91,6 +91,7 @@ function start() {
 
     while kill -0 "$pid" 2>/dev/null; do
       if [[ $(curl -s ${STEAMCMD_API}/${STEAMAPPID} | jq -r ".data.[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid") == "${STEAMPIPE_BUILD_ID}" ]]; then
+        echo "New BuildID is available, stopping server."
         kill -TERM "$server_pid"
         break
       fi
