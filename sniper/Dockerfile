@@ -75,7 +75,7 @@ ENV RSDW_SERVER_NAME="rsdw-container" \
 # Set permissions on STEAMAPPDIR
 # Permissions may need to be reset if persistent volume mounted
 RUN set -x \
-        && apt-get install unzip gettext-base pwgen\
+        && apt-get -y install unzip gettext-base pwgen jq\
 	&& mkdir -p "${STEAMAPPDIR}" \
 	&& chmod +x "/entry.sh" \
         && chown -R "${PUID}:${PGID}" "${STEAMAPPDIR}" \
