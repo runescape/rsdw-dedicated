@@ -16,7 +16,7 @@ This image provides a convenient [RuneScape: Dragonwilds Server](https://store.s
 
 Running using Docker:
 ```console
-docker run -d --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicataed ghcr.io/runescape/rsdw-dedicated
+docker run -d --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicated ghcr.io/runescape/rsdw-dedicated
 ```
 
 ## System Requirements
@@ -38,7 +38,7 @@ docker volume create rsdw-dedicated
 
 ```console
 # Run with volume attached
-docker run -d -v rsdw-dedicated:/home/steam/rsdw-dedicated --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicataed ghcr.io/runescape/rsdw-dedicated
+docker run -d -v rsdw-dedicated:/home/steam/rsdw-dedicated --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicated ghcr.io/runescape/rsdw-dedicated
 ```
 
 # Configuration
