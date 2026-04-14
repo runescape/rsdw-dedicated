@@ -66,7 +66,7 @@ Feel free to overwrite these environment variables, using -e (--env):
 > - Check the container’s standard output for the generated values  
 > - Explicitly setting these environment variables disables this behavior
 
-When Steam-based installs are used, the container can detect newer builds while the server is running. By default it only logs that an update is available; set `RSDW_AUTO_STOP_ON_UPDATE=true` to stop the server and rely on your restart policy or orchestrator to bring it back on the newer build.
+The container can detect the availability of newer builds on Steam while the server is running. By default, it only logs that an update is available; set `RSDW_AUTO_STOP_ON_UPDATE=true` to stop the server and rely on your runtime restart policy or orchestrator to restart it. SteamCMD updates the server each time the container starts.
 
 ## Debug Logging
 
