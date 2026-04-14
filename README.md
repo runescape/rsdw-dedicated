@@ -58,12 +58,15 @@ Feel free to overwrite these environment variables, using -e (--env):
 | RSDW_ADMINS          | string |                | Comma separated list of user ids |
 | RSDW_ADMIN_PASSWORD  | string | random         | Server admin password. |
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
+| RSDW_AUTO_STOP_ON_UPDATE | boolean | false | Set to lowercase `true` to stop the server when a new Steam build is detected. Restart behavior depends on your container runtime or orchestrator. |
 
 > [!NOTE]
 > - `RSDW_OWNER_ID` is **required** for server visibility/functionality  
 > - Environment variables with `random` default values are regenerated as random strings each time the container starts  
 > - Check the container’s standard output for the generated values  
 > - Explicitly setting these environment variables disables this behavior
+
+When Steam-based installs are used, the container can detect newer builds while the server is running. By default it only logs that an update is available; set `RSDW_AUTO_STOP_ON_UPDATE=true` to stop the server and rely on your restart policy or orchestrator to bring it back on the newer build.
 
 ## Debug Logging
 

@@ -4,8 +4,8 @@
 set -e
 
 # Globals
-STEAMCMD_API="https://api.steamcmd.net/v1/info"
-STEAM_DEPOT_BRANCH="public"
+STEAM_UPTODATECHECK_API="https://api.steampowered.com/ISteamApps/UpToDateCheck/v1/"
+STEAM_UPDATE_CHECK_INTERVAL_SECONDS=1800
 
 # Functions
 
@@ -29,6 +29,36 @@ function split_quoted_args() {
   printf '%s\n' "$parsed_file"
 }
 
+function get_installed_build_id() {
+  local manifest="${STEAMAPPDIR}/steamapps/appmanifest_${STEAMAPPID}.acf"
+
+  if [[ ! -f "${manifest}" ]]; then
+    echo "Warning: app manifest is unavailable at ${manifest}" >&2
+    return 1
+  fi
+
+  jq -Rn --rawfile acf "${manifest}" '
+    $acf
+    | capture("\"buildid\"\\s+\"(?<buildid>[0-9]+)\"").buildid
+  ' 2>/dev/null
+}
+
+# This flow intentionally targets the current `public` branch behavior only.
+# `UpToDateCheck` has no beta/branch selector.
+# `steamcmd +app_info_print` is intentionally avoided due to Valve issues:
+# https://github.com/ValveSoftware/steam-for-linux/issues/9683
+# https://github.com/ValveSoftware/steam-for-linux/issues/11521
+# Use Valve's documented `UpToDateCheck` API instead.
+function get_up_to_date_check() {
+  local installed_build_id="$1"
+
+  curl -fsS \
+    --get "${STEAM_UPTODATECHECK_API}" \
+    --data-urlencode "appid=${STEAMAPPID}" \
+    --data-urlencode "version=${installed_build_id}" \
+    --data-urlencode "format=json"
+}
+
 function download() {
 
   # Create App Dir
@@ -45,20 +75,6 @@ function download() {
   else
     # Dev Builds can not be auto updated
     AUTO_UPDATE="true"
-
-    # Get current buildid
-    local baseline_build_id=""
-    if baseline_build_id="$(curl -s "${STEAMCMD_API}/${STEAMAPPID}" | jq -r ".data[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid")"; then
-        if [[ -n "$baseline_build_id" && "$baseline_build_id" != "null" ]]; then
-            STEAMPIPE_BUILD_ID="${baseline_build_id}"
-        else
-            echo "Warning: baseline BuildID is unavailable; auto-update will be disabled for this run."
-            AUTO_UPDATE="false"
-        fi
-    else
-        echo "Warning: failed to fetch baseline BuildID; auto-update will be disabled for this run."
-        AUTO_UPDATE="false"
-    fi
 
     # Else, download live build from Steam
     if [[ "$STEAMAPPVALIDATE" -eq 1 ]]; then
@@ -115,6 +131,13 @@ function download() {
     if [[ $steamcmd_rc != 0 ]]; then
         exit $steamcmd_rc
     fi
+
+    if STEAMPIPE_BUILD_ID="$(get_installed_build_id)"; then
+        echo "Installed Steam build ID: ${STEAMPIPE_BUILD_ID}"
+    else
+        echo "Warning: installed BuildID is unavailable; auto-update will be disabled for this run."
+        AUTO_UPDATE="false"
+    fi
   fi
 }
 
@@ -163,16 +186,31 @@ function start() {
     server_pid=$!
 
     while kill -0 "$server_pid" 2>/dev/null; do
-      sleep 1800 &
+      sleep "${STEAM_UPDATE_CHECK_INTERVAL_SECONDS}" &
       sleep_pid=$!
       wait "$sleep_pid" 2>/dev/null || true
-      local current_build_id=""
-      if current_build_id="$(curl -s "${STEAMCMD_API}/${STEAMAPPID}" | jq -r ".data[\"${STEAMAPPID}\"]?.depots.branches.${STEAM_DEPOT_BRANCH}.buildid")"; then
-        if [[ -n "$current_build_id" && "$current_build_id" != "null" && "$current_build_id" != "${STEAMPIPE_BUILD_ID}" ]]; then
-          echo "New BuildID is available, stopping server."
-          kill -TERM "$server_pid"
-          break
+      # Compare the locally installed public-branch build against Valve's current required version.
+      local up_to_date_check_response=""
+      if up_to_date_check_response="$(get_up_to_date_check "${STEAMPIPE_BUILD_ID}")"; then
+        local success=""
+        local up_to_date=""
+        local required_version=""
+        if ! success="$(jq -r '.response.success // empty' <<<"${up_to_date_check_response}")" \
+          || ! up_to_date="$(jq -r '.response.up_to_date // empty' <<<"${up_to_date_check_response}")" \
+          || ! required_version="$(jq -r '.response.required_version // empty' <<<"${up_to_date_check_response}")"; then
+          echo "Warning: failed to parse Steam UpToDateCheck response; continuing with current server process."
+        elif [[ "${success}" == "true" && "${up_to_date}" == "false" ]]; then
+          # Stopping on update is opt-in; restart behavior belongs to the container runtime or orchestrator.
+          if [[ "$RSDW_AUTO_STOP_ON_UPDATE" == "true" ]]; then
+            echo "New Steam version is available (installed=${STEAMPIPE_BUILD_ID}, required=${required_version}), stopping server."
+            kill -TERM "$server_pid"
+            break
+          else
+            echo "New Steam version is available (installed=${STEAMPIPE_BUILD_ID}, required=${required_version}), but RSDW_AUTO_STOP_ON_UPDATE is disabled; continuing to run current server."
+          fi
         fi
+      else
+        echo "Warning: failed to query Steam UpToDateCheck; continuing with current server process."
       fi
       sleep_pid=""
     done
@@ -191,6 +229,7 @@ function start() {
 ## Steamcmd debugging
 DEBUG="${DEBUG:-0}"
 STEAMAPPVALIDATE="${STEAMAPPVALIDATE:-0}"
+RSDW_AUTO_STOP_ON_UPDATE="${RSDW_AUTO_STOP_ON_UPDATE:-false}"
 
 if [[ "$DEBUG" -eq 1 ]] || [[ "$DEBUG" -eq 3 ]]; then
     STEAMCMD_SPEW="+set_spew_level 4 4"
