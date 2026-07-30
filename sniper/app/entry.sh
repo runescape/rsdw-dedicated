@@ -269,19 +269,22 @@ else
 fi
 
 ## Generate random passwords, if required
-if [[ "$RSDW_PASSWORD" == "random" ]]; then
-  export RSDW_PASSWORD="$(pwgen -AB 12 1)"
-  echo "RSDW_PASSWORD set to: ${RSDW_PASSWORD}"
-fi
-if [[ "$RSDW_ADMIN_PASSWORD" == "random" ]]; then
-  export RSDW_ADMIN_PASSWORD="$(pwgen -AB 12 1)"
-  echo "RSDW_ADMIN_PASSWORD set to: ${RSDW_ADMIN_PASSWORD}"
-fi
+if [[ "$GAMELIFT" == "false" ]] ; then
+  if [[ "$RSDW_PASSWORD" == "random" ]]; then
+    export RSDW_PASSWORD="$(pwgen -AB 12 1)"
+    echo "RSDW_PASSWORD set to: ${RSDW_PASSWORD}"
+  fi
 
-## Check that World name is set
-if [[ -z "${RSDW_WORLD_NAME}" ]]; then
-  export RSDW_WORLD_NAME="$(shuf -n 1 /etc/default/DedicatedServer.names)"
-  echo "RSDW_WORLD_NAME set to: ${RSDW_WORLD_NAME}"
+  if [[ "$RSDW_ADMIN_PASSWORD" == "random" ]]; then
+    export RSDW_ADMIN_PASSWORD="$(pwgen -AB 12 1)"
+    echo "RSDW_ADMIN_PASSWORD set to: ${RSDW_ADMIN_PASSWORD}"
+  fi
+
+  ## Check that World name is set
+  if [[ -z "${RSDW_WORLD_NAME}" ]]; then
+    export RSDW_WORLD_NAME="$(shuf -n 1 /etc/default/DedicatedServer.names)"
+    echo "RSDW_WORLD_NAME set to: ${RSDW_WORLD_NAME}"
+  fi
 fi
 
 # Download Dedicated Server
