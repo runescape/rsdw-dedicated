@@ -6,6 +6,8 @@ set -e
 # Globals
 STEAM_UPTODATECHECK_API="https://api.steampowered.com/ISteamApps/UpToDateCheck/v1/"
 STEAM_UPDATE_CHECK_INTERVAL_SECONDS=1800
+export RSDW_LAUNCH="${STEAMAPPDIR}/RSDragonwildsServer.sh"
+export RSDW_CONFIG="${STEAMAPPDIR}/RSDragonwilds/Saved/Config/LinuxServer/DedicatedServer.ini"
 
 # Functions
 
@@ -164,21 +166,27 @@ function start() {
   echo "Launching RSDragonwildsServer.sh"
 
   local server_cmd=(
-    bash "${STEAMAPPDIR}/RSDragonwildsServer.sh"
+    bash "${RSDW_LAUNCH}"
     -Port "${RSDW_PORT}"
   )
   local additional_args=()
 
-  if [[ -n "${RSDW_ADDITIONAL_ARGS:-}" ]]; then
-    local additional_args_file=""
-    if ! additional_args_file="$(split_quoted_args "${RSDW_ADDITIONAL_ARGS}")"; then
-      exit 1
+  if [[ "$GAMELIFT" == "true" ]] ; then
+    server_cmd=(
+      "${HOME}/gamelift-wrapper"
+    )
+  else
+    if [[ -n "${RSDW_ADDITIONAL_ARGS:-}" ]]; then
+      local additional_args_file=""
+      if ! additional_args_file="$(split_quoted_args "${RSDW_ADDITIONAL_ARGS}")"; then
+        exit 1
+      fi
+      while IFS= read -r line || [[ -n "$line" ]]; do
+        additional_args+=("$line")
+      done < "${additional_args_file}"
+      rm -f "${additional_args_file}"
+      server_cmd+=("${additional_args[@]}")
     fi
-    while IFS= read -r line || [[ -n "$line" ]]; do
-      additional_args+=("$line")
-    done < "${additional_args_file}"
-    rm -f "${additional_args_file}"
-    server_cmd+=("${additional_args[@]}")
   fi
 
   if [[ "$AUTO_UPDATE" == "true" ]]; then
@@ -279,8 +287,10 @@ fi
 # Download Dedicated Server
 download
 
-# Template configuration file
-envsubst < /etc/default/DedicatedServer.ini > "${STEAMAPPDIR}/RSDragonwilds/Saved/Config/LinuxServer/DedicatedServer.ini"
+# Template configuration files
+mkdir -p "${STEAMAPPDIR}/RSDragonwilds/Saved/Config/LinuxServer/"
+envsubst < /etc/default/DedicatedServer.ini > "${RSDW_CONFIG}"
+envsubst < /etc/default/gamelift_config.yaml > "${HOME}/config.yaml"
 
 # Switch to server directory
 cd "${STEAMAPPDIR}/RSDragonwilds/"

@@ -20,11 +20,35 @@ ARG USER=steam
 ARG HOMEDIR="/home/steam"
 ARG STEAMCMDDIR="${HOMEDIR}/steamcmd"
 
+#
+# Gamelift wrapper build stage
+#
+
+FROM golang:1.26-trixie AS gamelift
+
+LABEL maintainer="Spudworks"
+
+# Install build tools if not already present in the image
+RUN apt-get update && apt-get install -y --no-install-recommends make ca-certificates git unzip\
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /build
+
+RUN git clone https://github.com/amazon-gamelift/amazon-gamelift-servers-game-server-wrapper.git /build
+
+WORKDIR /build
+
+RUN make
+
+#
 # SteamCMD Stage
+#
 
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform as steamcmd
 
 LABEL maintainer="Spudworks"
+
+WORKDIR /
 
 ARG PUID
 ARG PGID
@@ -58,10 +82,15 @@ ENV STEAMAPPDIR="${HOMEDIR}/${STEAMAPP}-dedicated"
 ENV STEAMAPPVALIDATE=0
 
 COPY app/entry.sh "/entry.sh"
+COPY app/RSDragonwildsGamelift.sh "${HOMEDIR}/gamelift/RSDragonwildsGamelift.sh"
 COPY etc/DedicatedServer.ini /etc/default/DedicatedServer.ini
 COPY etc/places /etc/default/DedicatedServer.names
 
+COPY --from=gamelift /build/out/linux/amd64/gamelift-servers-managed-containers/amazon-gamelift-servers-game-server-wrapper "${HOMEDIR}/gamelift-wrapper"
+COPY etc/gamelift_config.yaml /etc/default/gamelift_config.yaml
+
 ENV DEVBUILD_PRESIGNED_URL=""
+ENV GAMELIFT="false"
 ENV RSDW_SERVER_NAME="rsdw-container" \
     RSDW_WORLD_NAME="" \
     RSDW_OWNER_ID="" \
@@ -77,10 +106,11 @@ RUN set -x \
         && apt-get update \
         && apt-get install -y --no-install-recommends unzip gettext-base pwgen jq \
         && rm -rf /var/lib/apt/lists/* \
-        && mkdir -p "${STEAMAPPDIR}" \
+        && mkdir -p "${STEAMAPPDIR}" "${HOMEDIR}/gamelift" \
         && chmod +x "/entry.sh" \
-        && chown -R "${PUID}:${PGID}" "${STEAMAPPDIR}" \
-        && chmod 0755 "${STEAMAPPDIR}"
+        && chmod +x "${HOMEDIR}/gamelift-wrapper" "${HOMEDIR}/gamelift/RSDragonwildsGamelift.sh" \
+        && chown -R "${PUID}:${PGID}" "${STEAMAPPDIR}" "${HOMEDIR}/gamelift" \
+        && chmod 0755 "${STEAMAPPDIR}" "${HOMEDIR}/gamelift"
 
 # Switch to user
 USER ${PUID}:${PGID}

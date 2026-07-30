@@ -1,0 +1,24 @@
+log-config:
+  wrapper-log-level: debug                                      # The verbosity of the log messages emitted by the wrapper. Valid options are: debug, info, warn, error.
+
+ports:
+  gamePort: ${RSDW_PORT}
+
+game-server-details:
+  executable-file-path: /home/steam/gamelift/RSDragonwildsGamelift.sh # Entry point to execute the game server
+  game-server-args:                                             # (Optional) Argument key value pairs that are passed to the game server entry point
+    - arg: "--rsdw-launch"
+      val: "${RSDW_LAUNCH}"
+      pos: 0
+    - arg: "--rsdw-config-file"
+      val: "${RSDW_CONFIG}"
+      pos: 1
+    - arg: "--rsdw-owner-id"
+      val: "${RSDW_OWNER_ID}"
+      pos: 2
+    - arg: "--rsdw-port"
+      val: "{{.ContainerPort}}"
+      pos: 3
+    - arg: "--rsdw-game-properties-json"
+      val: "{{.GameProperties}}"
+      pos: 4
