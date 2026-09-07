@@ -4,7 +4,7 @@
 
 This image provides a convenient [RuneScape: Dragonwilds Server](https://store.steampowered.com/app/1374490/RuneScape_Dragonwilds/), which will automatically download the latest stable version at launch.
 
-<img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1374490/d0c222ee8a08f20eacf8a28fe8feb6c378433281/header.jpg?t=1775138221" alt="logo" width="300"/></img>
+<img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1374490/6f6bba2ddccb49f3a0abb831684ca085e453c721/header_alt_assets_3.jpg?t=1788340069" alt="logo" width="300"/></img>
 
 # How to use this image
 
