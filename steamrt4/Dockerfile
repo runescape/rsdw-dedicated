@@ -44,7 +44,7 @@ RUN make
 # SteamCMD Stage
 #
 
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform as steamcmd
+FROM registry.gitlab.steamos.cloud/steamrt/steamrt4/sdk as steamcmd
 
 LABEL maintainer="Spudworks"
 
