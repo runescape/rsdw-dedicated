@@ -119,3 +119,4 @@ ENTRYPOINT exec /entry.sh
 
 # Expose ports
 EXPOSE 7777/udp
+EXPOSE 8888/udp

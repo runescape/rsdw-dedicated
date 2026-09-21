@@ -14,10 +14,23 @@ This image provides a convenient [RuneScape: Dragonwilds Server](https://store.s
 
 ## Hosting a simple game server
 
-Running using Docker:
+Running using Docker. Publish both UDP ports. The host port and the container port must be the same number:
+
 ```console
-docker run -d --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicated ghcr.io/runescape/rsdw-dedicated
+docker run -d \
+  --name=rsdw-dedicated \
+  -p 7777:7777/udp \
+  -p 8888:8888/udp \
+  --env RSDW_OWNER_ID=<userid_from_gameclient> \
+  --env RSDW_WORLD_NAME=MyWorld \
+  --env RSDW_PASSWORD= \
+  --env RSDW_ADMIN_PASSWORD=<admin_password> \
+  ghcr.io/runescape/rsdw-dedicated
 ```
+
+`--env RSDW_PASSWORD=` sets an empty join password. Omitting `RSDW_PASSWORD` does not. The image default is `random`, so a new password is generated on every start. Set `RSDW_WORLD_NAME` and `RSDW_ADMIN_PASSWORD` as well, or those are regenerated too.
+
+The same settings are in [`compose.yaml`](compose.yaml).
 
 ## System Requirements
 
@@ -38,7 +51,16 @@ docker volume create rsdw-dedicated
 
 ```console
 # Run with volume attached
-docker run -d -v rsdw-dedicated:/home/steam/rsdw-dedicated --env RSDW_OWNER_ID=<userid_from_gameclient> --name=rsdw-dedicated ghcr.io/runescape/rsdw-dedicated
+docker run -d \
+  --name=rsdw-dedicated \
+  -p 7777:7777/udp \
+  -p 8888:8888/udp \
+  -v rsdw-dedicated:/home/steam/rsdw-dedicated \
+  --env RSDW_OWNER_ID=<userid_from_gameclient> \
+  --env RSDW_WORLD_NAME=MyWorld \
+  --env RSDW_PASSWORD= \
+  --env RSDW_ADMIN_PASSWORD=<admin_password> \
+  ghcr.io/runescape/rsdw-dedicated
 ```
 
 # Configuration
@@ -65,8 +87,23 @@ Feel free to overwrite these environment variables, using -e (--env):
 > - Environment variables with `random` default values are regenerated as random strings each time the container starts  
 > - Check the container’s standard output for the generated values  
 > - Explicitly setting these environment variables disables this behavior
+> - Leaving `RSDW_PASSWORD` unset does not make an open world. The image sets it to `random` unless you pass an empty string
 
 The container can detect the availability of newer builds on Steam while the server is running. By default, it only logs that an update is available; set `RSDW_AUTO_STOP_ON_UPDATE=true` to stop the server and rely on your runtime restart policy or orchestrator to restart it. SteamCMD updates the server each time the container starts.
+
+## Ports
+
+`RSDW_PORT` is the game port (UDP 7777 by default). The process also binds a beacon on that port plus 1111. With the default game port, the log line is:
+
+```text
+LogDomGameMode: World settings beacon listening on port 8888
+```
+
+Publish `7777/udp` and `8888/udp`. If you change `RSDW_PORT`, publish `RSDW_PORT` and `RSDW_PORT + 1111`, and keep each host port equal to the container port. A mismatched game port sends players back to the title screen.
+
+## Joining from the same network
+
+The Worlds list connects to the server's public address. If UDP 7777 and the beacon port are not forwarded, the world can still appear in that list and then fail with "connection lost". Players on the same LAN should Direct connect to the host's LAN address on the game port. That is the same failure as a server which is listed but not joinable because port forwarding did not work.
 
 ## Debug Logging
 
