@@ -1,3 +1,3 @@
-[submodule "sniper/dependencies/gamelift-wrapper"]
-	path = sniper/dependencies/gamelift-wrapper
+[submodule "steamrt4/dependencies/gamelift-wrapper"]
+	path = steamrt4/dependencies/gamelift-wrapper
 	url = https://github.com/amazon-gamelift/amazon-gamelift-servers-game-server-wrapper.git
