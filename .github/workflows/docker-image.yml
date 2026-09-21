@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
     - name: Build the Docker image
-      working-directory: ./sniper
+      working-directory: ./steamrt4
       run: docker build . --file Dockerfile
