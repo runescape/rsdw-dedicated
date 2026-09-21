@@ -29,16 +29,14 @@ FROM golang:1.26-trixie AS gamelift
 LABEL maintainer="Spudworks"
 
 # Install build tools if not already present in the image
-RUN apt-get update && apt-get install -y --no-install-recommends make ca-certificates git unzip\
+RUN apt-get update && apt-get install -y --no-install-recommends make ca-certificates unzip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /build
-
-RUN git clone https://github.com/amazon-gamelift/amazon-gamelift-servers-game-server-wrapper.git /build
+COPY dependencies/gamelift-wrapper /build
 
 WORKDIR /build
 
-RUN make
+RUN make build
 
 #
 # SteamCMD Stage
