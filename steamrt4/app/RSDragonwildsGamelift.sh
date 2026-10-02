@@ -37,6 +37,12 @@ while (( $# > 0 )); do
       short_args+=(-p "$2")
       shift 2
       ;;
+    --rsdw-beacon-port)
+      (( $# >= 2 )) || usage_error "missing value for --rsdw-beacon-port"
+      [[ -n "$2" && "$2" != --* ]] || usage_error "missing value for --rsdw-beacon-port"
+      short_args+=(-b "$2")
+      shift 2
+      ;;
     --rsdw-game-properties-json)
       (( $# >= 2 )) || usage_error "missing value for --rsdw-game-properties-json"
       [[ -n "$2" && "$2" != --* ]] || usage_error "missing value for --rsdw-game-properties-json"
@@ -58,6 +64,7 @@ have_launch=false
 have_config_file=false
 have_owner_id=false
 have_port=false
+have_beacon_port=false
 have_game_properties_json=false
 
 OPTIND=1
@@ -83,6 +90,11 @@ while getopts ":l:c:o:p:g:" option; do
       RSDW_PORT="$OPTARG"
       have_port=true
       ;;
+    b)
+      [[ "$have_beacon_port" == false ]] || usage_error "duplicate option: --rsdw-beacon-port"
+      RSDW_BEACON_PORT="$OPTARG"
+      have_beacon_port=true
+      ;;
     g)
       [[ "$have_game_properties_json" == false ]] || usage_error "duplicate option: --rsdw-game-properties-json"
       RSDW_GAME_PROPERTIES_JSON="$OPTARG"
@@ -103,6 +115,7 @@ shift $((OPTIND - 1))
 [[ "$have_config_file" == true ]] || usage_error "missing required option: --rsdw-config-file"
 [[ "$have_owner_id" == true ]] || usage_error "missing required option: --rsdw-owner-id"
 [[ "$have_port" == true ]] || usage_error "missing required option: --rsdw-port"
+[[ "$have_beacon_port" == true ]] || usage_error "missing required option: --rsdw-beacon-port"
 [[ "$have_game_properties_json" == true ]] || usage_error "missing required option: --rsdw-game-properties-json"
 
 echo "RSDW Gamelift wrapper invoked with named arguments."
@@ -132,6 +145,7 @@ export RSDW_LAUNCH
 export RSDW_CONFIG_FILE
 export RSDW_OWNER_ID
 export RSDW_PORT
+export RSDW_BEACON_PORT
 export RSDW_SERVER_NAME
 export RSDW_WORLD_NAME
 export RSDW_PASSWORD
@@ -141,4 +155,4 @@ export RSDW_ADMINS
 # Fix the config substitution target if you meant RSDW_CONFIG_FILE
 envsubst < /etc/default/DedicatedServer.ini > "${RSDW_CONFIG_FILE}"
 
-exec "${RSDW_LAUNCH}" -Port "${RSDW_PORT}"
+exec "${RSDW_LAUNCH}" -Port="${RSDW_PORT}" -BeaconPort="${RSDW_BEACON_PORT}"

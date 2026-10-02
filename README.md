@@ -73,7 +73,8 @@ Feel free to overwrite these environment variables, using -e (--env):
 | Variable             | Type   | Default        | Description    |
 | -------------------- | ------ | -------------- | -------------- |
 | RSDW_OWNER_ID        | string |                | The EOS Online ID of the owner of the server (REQUIRED).|
-| RSDW_PORT            | number | 7777           | UDP port for the server process to bind to. |
+| RSDW_PORT            | number | 7777           | UDP game port for the server process to bind to. |
+| RSDW_BEACON_PORT     | number | 8888           | UDP beacon port for the server process to bind to. |
 | RSDW_SERVER_NAME     | string | rsdw-container | Name of server | 
 | RSDW_WORLD_NAME      | string | random         | Visible name of server in the Worlds browser |
 | RSDW_PASSWORD        | string | random         | Server password. Explicitly set to an empty string if no password is desired. |
@@ -93,17 +94,14 @@ The container can detect the availability of newer builds on Steam while the ser
 
 ## Ports
 
-`RSDW_PORT` is the game port (UDP 7777 by default). The process also binds a beacon on that port plus 1111. With the default game port, the log line is:
+`RSDW_PORT` is the game port (UDP 7777 by default). 
+`RSDW_BEACON_PORT` is the beacon port (UDP 8888 by default).
 
-```text
-LogDomGameMode: World settings beacon listening on port 8888
-```
-
-Publish `7777/udp` and `8888/udp`. If you change `RSDW_PORT`, publish `RSDW_PORT` and `RSDW_PORT + 1111`, and keep each host port equal to the container port. A mismatched game port sends players back to the title screen.
+By defatult, the Dockerfile publishes `7777/udp` and `8888/udp`.
 
 ## Joining from the same network
 
-The Worlds list connects to the server's public address. If UDP 7777 and the beacon port are not forwarded, the world can still appear in that list and then fail with "connection lost". Players on the same LAN should Direct connect to the host's LAN address on the game port. That is the same failure as a server which is listed but not joinable because port forwarding did not work.
+The Worlds list connects to the server's public address. If RSDW_PORT and RSDW_BEACON_PORT are not forwarded, the world can still appear in that list and then fail with "connection lost". Players on the same LAN should Direct connect to the host's LAN address on the game port. That is the same failure as a server which is listed but not joinable because port forwarding did not work.
 
 ## Debug Logging
 
