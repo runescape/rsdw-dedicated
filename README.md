@@ -82,6 +82,7 @@ Feel free to overwrite these environment variables, using -e (--env):
 | RSDW_ADMIN_PASSWORD  | string | random         | Server admin password. |
 | RSDW_ADDITIONAL_ARGS | string |                | Additional CLI arguments to be passed into RSDragonwildsServer.sh |
 | RSDW_AUTO_STOP_ON_UPDATE | boolean | false | Set to lowercase `true` to stop the server when a new Steam build is detected. Restart behavior depends on your container runtime or orchestrator. |
+| RSDW_LINE_BUFFERED_LOGS | boolean | true | Line-buffer the server's stdout so each log line reaches the container log immediately. Set to `false` to restore block buffering. |
 
 > [!NOTE]
 > - `RSDW_OWNER_ID` is **required** for server visibility/functionality  
@@ -89,6 +90,7 @@ Feel free to overwrite these environment variables, using -e (--env):
 > - Check the container’s standard output for the generated values  
 > - Explicitly setting these environment variables disables this behavior
 > - Leaving `RSDW_PASSWORD` unset does not make an open world. The image sets it to `random` unless you pass an empty string
+> - Avoid `-FORCELOGFLUSH` in `RSDW_ADDITIONAL_ARGS`: it fdatasyncs the log file after every line on the game thread, which can freeze the server for seconds when it logs in bursts. `RSDW_LINE_BUFFERED_LOGS` already makes logs appear immediately
 
 The container can detect the availability of newer builds on Steam while the server is running. By default, it only logs that an update is available; set `RSDW_AUTO_STOP_ON_UPDATE=true` to stop the server and rely on your runtime restart policy or orchestrator to restart it. SteamCMD updates the server each time the container starts.
 

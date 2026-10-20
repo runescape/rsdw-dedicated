@@ -319,6 +319,18 @@ function start() {
       rm -f "${additional_args_file}"
       server_cmd+=("${additional_args[@]}")
     fi
+
+    # Line-buffer the server's stdout so each log line reaches the container log immediately.
+    # -FORCELOGFLUSH also does that, but by fdatasyncing the log file per line on the game thread,
+    # which stalls the server whenever it logs in bursts.
+    if [[ "$RSDW_LINE_BUFFERED_LOGS" == "true" ]]; then
+      local stdbuf_lib="/usr/libexec/coreutils/libstdbuf.so"
+      if [[ -f "$stdbuf_lib" ]]; then
+        server_cmd=(env _STDBUF_O=L "LD_PRELOAD=${stdbuf_lib}${LD_PRELOAD:+:${LD_PRELOAD}}" "${server_cmd[@]}")
+      else
+        echo "Warning: ${stdbuf_lib} not found; server logs will be block-buffered."
+      fi
+    fi
   fi
 
   if [[ "$AUTO_UPDATE" == "true" ]]; then
@@ -394,6 +406,7 @@ function start() {
 DEBUG="${DEBUG:-0}"
 STEAMAPPVALIDATE="${STEAMAPPVALIDATE:-0}"
 RSDW_AUTO_STOP_ON_UPDATE="${RSDW_AUTO_STOP_ON_UPDATE:-false}"
+RSDW_LINE_BUFFERED_LOGS="${RSDW_LINE_BUFFERED_LOGS:-true}"
 
 if [[ "$DEBUG" -eq 1 ]] || [[ "$DEBUG" -eq 3 ]]; then
     STEAMCMD_SPEW="+set_spew_level 4 4"
