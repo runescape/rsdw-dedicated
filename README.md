@@ -120,3 +120,24 @@ If you break the game through your customisations and want steamcmd to validate 
 ```dockerfile
 STEAMAPPVALIDATE=0          (0=skip validation, 1=validate game files)
 ```
+
+## Healthcheck
+
+The image defines a Docker `HEALTHCHECK` that reports the container `healthy`
+while the game server process is running. It is **process-based**: it does not
+prove the world is joinable, only that the server binary is alive.
+
+- Interval `60s`, timeout `10s`, retries `3`
+- `start_period` is `600s`: first boot downloads the server via SteamCMD before
+  the process starts, so a smaller period marks a legitimate first boot as
+  `unhealthy`
+- The check runs as the container user and needs no extra privileges
+
+Check the state with:
+
+```console
+docker inspect --format='{{.State.Health.Status}}' <container>
+```
+
+You can override the defaults in your own `compose.yaml` by adding a
+`healthcheck:` block to the service.

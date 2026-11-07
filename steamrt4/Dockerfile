@@ -81,6 +81,7 @@ ENV STEAMAPPVALIDATE=0
 
 COPY app/entry.sh "/entry.sh"
 COPY app/RSDragonwildsGamelift.sh "${HOMEDIR}/gamelift/RSDragonwildsGamelift.sh"
+COPY app/healthcheck.sh "/usr/local/bin/rsdw-healthcheck"
 COPY etc/DedicatedServer.ini /etc/default/DedicatedServer.ini
 COPY etc/places /etc/default/DedicatedServer.names
 
@@ -103,10 +104,11 @@ ENV RSDW_SERVER_NAME="rsdw-container" \
 # Permissions may need to be reset if persistent volume mounted
 RUN set -x \
         && apt-get update \
-        && apt-get install -y --no-install-recommends unzip gettext-base pwgen jq \
+        && apt-get install -y --no-install-recommends unzip gettext-base pwgen jq procps \
         && rm -rf /var/lib/apt/lists/* \
         && mkdir -p "${STEAMAPPDIR}" "${HOMEDIR}/gamelift" \
         && chmod +x "/entry.sh" \
+        && chmod +x "/usr/local/bin/rsdw-healthcheck" \
         && chmod +x "${HOMEDIR}/gamelift-wrapper" "${HOMEDIR}/gamelift/RSDragonwildsGamelift.sh" \
         && chown -R "${PUID}:${PGID}" "${STEAMAPPDIR}" "${HOMEDIR}/gamelift" \
         && chmod 0755 "${STEAMAPPDIR}" "${HOMEDIR}/gamelift"
@@ -117,6 +119,11 @@ USER ${PUID}:${PGID}
 # Launch entry script
 WORKDIR ${HOMEDIR}
 ENTRYPOINT exec /entry.sh
+
+# Healthcheck: healthy while the game server process is running. The generous
+# start-period covers first boot, which downloads the server via SteamCMD.
+HEALTHCHECK --interval=60s --timeout=10s --start-period=600s --retries=3 \
+  CMD ["/usr/local/bin/rsdw-healthcheck"]
 
 # Expose ports
 EXPOSE 7777/udp
